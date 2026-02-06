@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Juego del Impostor</title>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #111;
+    color: white;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+}
+
+button {
+    padding: 12px 20px;
+    margin: 8px;
+    font-size: 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.primary {
+    background: #2196f3;
+    color: white;
+}
+
+.secondary {
+    background: #555;
+    color: white;
+}
+
+.danger {
+    background: #e53935;
+    color: white;
+}
+
+input {
+    padding: 10px;
+    font-size: 16px;
+    margin: 5px;
+    width: 80%;
+    max-width: 300px;
+}
+
+.hidden {
+    display: none;
+}
+
+.screen {
+    padding: 20px;
+}
+
+.top-bar {
+    display: flex;
+    justify-content: flex-end;
+    padding: 10px;
+}
+
+.top-bar button {
+    background: transparent;
+    color: white;
+    font-size: 22px;
+}
+</style>
+</head>
+
+<body>
+
+<script>
+const personas = {
+    "Brass🎈": ["Medios", "B4"],
+    "Chave": ["Medios", "B3"],
+    "Emma": ["Teatro", "B3"],
+    "Seimon": ["Teatro", "B5"],
+    "Niqui": ["Teatro", "B5"],
+    "Pous": ["Medios", "B3"],
+    "Manute": ["Musica", "B6"],
+    "Luz": ["Plastica", "B6"],
+    "Jurius": ["Teatro", "B1"],
+    "Buitrago": ["Medios", "B4"],
+    "León": ["Plastica", "B4"],
+    "Juana López": ["Medios", "B1"],
+    "Jade": ["Medios", "B3"],
+    "$Manrique$": ["Teatro", "B4"],
+    "Emi Manrique": ["Medios", "B6"],
+    "Gorli": ["Medios", "B6"],
+    "Male polaca": ["Teatro", "B6"],
+    "Litwin": ["Musica", "NO fue a chaca"],
+    "Juana skibidi": ["Medios", "B1"],
+    "Palo Baiman": ["Medios", "NO fue a chaca"],
+    "Amanda Slur": ["Medios", "B2"],
+    "Emi Sánchez": ["Medios", "B5"],
+    "Eva": ["Medios", "B5"],
+    "Max": ["Medios", "B5"],
+    "Lina": ["Teatro", "B3"],
+    "Carme": ["Teatro", "B3"],
+    "Simón Geme": ["Musica", "B2"],
+    "Sari": ["Musica", "B6"],
+    "Cori": ["Teatro", "B6"],
+    "Valen Mejia": ["Plastica", "B2"],
+    "Caye": ["Musica", "B1"],
+    "Magui": ["Plastica", "NO fue a chaca"],
+    "Abril/Owen": ["Teatro", "B1"],
+    "Agus Puentes": ["Teatro", "B5"],
+    "Eliseo": ["Teatro", "B5"],
+    "Jaz Madaleno": ["Teatro", "B3"],
+    "Luca Ferraro": ["Plastica", "B6"],
+    "Amanda Nuria": ["Teatro", "B4"],
+    "Sota": ["Musica", "B1"],
+    "Astor": ["Musica", "B2"],
+    "Irupe": ["Plastica", "B4"],
+    "Mika": ["Teatro", "NO fue a chaca"],
+    "Loli": ["Plastica", "NO fue a chaca"],
+    "Federica Simeone": ["Plastica", "B5"],
+    "Viole Godoy": ["Teatro", "B4"],
+    "Sofi Sintas": ["Plastica", "B5"],
+    "Cam Celes": ["Teatro", "NO fue a chaca"],
+    "Julia Romano": ["Teatro", "B1"],
+    "Cesar Colman": ["NO fue a garay", "B3"],
+    "Lucio": ["Musica", "B5"],
+    "Kilafish": ["Musica", "B3"],
+    "Andrea": ["Musica", "NO fue a chaca"],
+    "Santi Sifredi": ["Medios", "NO fue a chaca"],
+}
+</script>
+
+<div class="top-bar">
+    <button onclick="confirmarMenu()">✖</button>
+</div>
+
+<div id="menu" class="screen">
+    <h1>🎮 JUEGO DEL IMPOSTOR</h1>
+    <button class="primary" onclick="configurar('normal')">Modo Normal</button><br>
+    <button class="primary" onclick="configurar('caos')">Modo Caos</button>
+</div>
+
+<div id="config" class="screen hidden">
+    <h2 id="tituloModo"></h2>
+
+    <p>Cantidad de jugadores</p>
+    <input type="number" id="cantJugadores" min="2">
+
+    <div id="impostoresBox">
+        <p>Cantidad de impostores</p>
+        <input type="number" id="cantImpostores" min="1">
+    </div>
+
+    <p>
+        <label>
+            <input type="checkbox" id="usarPistas">
+            Pista
+        </label>
+    </p>
+
+    <div id="inputs"></div>
+
+    <br>
+    <button class="primary" onclick="comenzar()">Comenzar</button>
+</div>
+
+<div id="turno" class="screen hidden">
+    <h2 id="nombreJugador"></h2>
+    <button class="primary" onclick="verRol()">Ver rol</button><br>
+    <button class="secondary" id="btnSig" onclick="siguiente()" disabled>Siguiente</button>
+</div>
+
+<div id="discusion" class="screen hidden">
+    <h2 id="comienza"></h2>
+    <h3>💬 MOMENTO DE DISCUTIR</h3>
+    <p>Hablen y decidan quién es</p>
+    <button class="primary" onclick="mostrarResultados()">Ver resultados</button>
+</div>
+
+<div id="resultados" class="screen hidden">
+    <h2>Resultados</h2>
+    <div id="listaResultados"></div>
+    <br>
+    <button class="primary" onclick="repetir()">Volver a jugar</button>
+    <button class="secondary" onclick="volverMenu()">Menú</button>
+</div>
+
+<script>
+
+let modo = "";
+let jugadores = [];
+let roles = [];
+let personaElegida = "";
+let indice = 0;
+let pistas = false;
+let visto = false;
+
+function mostrar(id){
+    document.querySelectorAll(".screen").forEach(s=>s.classList.add("hidden"));
+    document.getElementById(id).classList.remove("hidden");
+}
+
+function confirmarMenu(){
+    if(confirm("¿Volver al menú?")){
+        volverMenu();
+    }
+}
+
+function volverMenu(){
+    jugadores=[];
+    roles=[];
+    indice=0;
+    mostrar("menu");
+}
+
+function configurar(m){
+    modo = m;
+    mostrar("config");
+
+    document.getElementById("tituloModo").innerText =
+        "Modo " + m.toUpperCase();
+
+    document.getElementById("impostoresBox").style.display =
+        m==="normal" ? "block" : "none";
+}
+
+document.getElementById("cantJugadores").addEventListener("input", crearInputs);
+
+function crearInputs(){
+    const n = document.getElementById("cantJugadores").value;
+    const cont = document.getElementById("inputs");
+    cont.innerHTML="";
+
+    for(let i=0;i<n;i++){
+        cont.innerHTML +=
+        `<input placeholder="Jugador ${i+1}"><br>`;
+    }
+}
+
+function comenzar(){
+    const n = Number(cantJugadores.value);
+    if(n<2) return alert("Mínimo 2 jugadores");
+
+    jugadores = [];
+
+    document.querySelectorAll("#inputs input").forEach(i=>{
+        if(i.value.trim()=="") return alert("Completá todo");
+        jugadores.push(i.value.trim());
+    });
+
+    pistas = usarPistas.checked;
+    preparar();
+    indice=0;
+    mostrarTurno();
+}
+
+function preparar(){
+    const nombres = Object.keys(personas);
+
+    personaElegida = nombres[
+        Math.floor(Math.random()*nombres.length)
+    ];
+
+    roles = Array(jugadores.length).fill("Jugador");
+
+    if(modo==="normal"){
+        let c = Number(cantImpostores.value);
+
+        if(c<1 || c>=jugadores.length)
+            return alert("Cantidad inválida");
+
+        let idx = mezclar([...Array(jugadores.length).keys()]);
+
+        for(let i=0;i<c;i++)
+            roles[idx[i]]="Impostor";
+    }
+    else{
+        let c = Math.floor(Math.random()*(jugadores.length+1));
+        let idx = mezclar([...Array(jugadores.length).keys()]);
+
+        for(let i=0;i<c;i++)
+            roles[idx[i]]="Impostor";
+    }
+}
+
+function mezclar(a){
+    for(let i=a.length-1;i>0;i--){
+        let j=Math.floor(Math.random()*(i+1));
+        [a[i],a[j]]=[a[j],a[i]];
+    }
+    return a;
+}
+
+function mostrarTurno(){
+    visto=false;
+    btnSig.disabled=true;
+
+    nombreJugador.innerText =
+        "Turno de: " + jugadores[indice];
+
+    mostrar("turno");
+}
+
+function verRol(){
+    let rol = roles[indice];
+    let txt="";
+
+    if(rol==="Impostor"){
+        txt="SOS IMPOSTOR 🔴\n\n";
+
+        if(pistas){
+            let p = personas[personaElegida];
+            txt += "Pista: " + p[Math.floor(Math.random()*2)];
+        }
+    }else{
+        txt="SOS JUGADOR 🟢";
+
+        if(pistas){
+            txt+="\n\nPersona: "+personaElegida;
+        }
+    }
+
+    alert(txt);
+
+    visto=true;
+    btnSig.disabled=false;
+}
+
+function siguiente(){
+    if(!visto) return;
+
+    indice++;
+
+    if(indice<jugadores.length){
+        mostrarTurno();
+    }else{
+        iniciarDiscusion();
+    }
+}
+
+function iniciarDiscusion(){
+    let emp = jugadores[
+        Math.floor(Math.random()*jugadores.length)
+    ];
+
+    comienza.innerText =
+        "COMIENZA " + emp.toUpperCase();
+
+    mostrar("discusion");
+}
+
+function mostrarResultados(){
+    let html="";
+
+    for(let i=0;i<jugadores.length;i++){
+        let r = roles[i]==="Impostor"?"IMPOSTOR":"JUGADOR";
+        html+=`<p>${jugadores[i]} → ${r} (${personaElegida})</p>`;
+    }
+
+    listaResultados.innerHTML=html;
+    mostrar("resultados");
+}
+
+function repetir(){
+    preparar();
+    indice=0;
+    mostrarTurno();
+}
+
+</script>
+
+</body>
+</html>
